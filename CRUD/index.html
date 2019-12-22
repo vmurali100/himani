@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form>
+      <label for="fname">Full Name</label>
+      <input type="text" id="fname" /> <br />
+
+      <label for="email">Email</label>
+      <input type="text" id="email" /> <br />
+
+      <label for="pass">Password</label>
+      <input type="text" id="pass" /> <br />
+      <button onclick="addUser()" type="button">Add User</button>
+    </form>
+    <br />
+    <table border="1">
+      <thead>
+        <th>FUll name</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Id</th>
+      </thead>
+      <tbody id="myTable"></tbody>
+    </table>
+    <script>
+      function addUser() {
+        var user = {
+          fname: "",
+          email: "",
+          pass: ""
+        };
+
+        for (a in user) {
+          user[a] = document.getElementById(a).value;
+        }
+        console.log(user);
+
+        postData(user);
+      }
+
+      function postData(user) {
+        var postInfo = new XMLHttpRequest();
+        postInfo.onreadystatechange = function() {
+          if (postInfo.readyState == 4 && postInfo.status == 201) {
+            console.log("User Added");
+          }
+        };
+
+        postInfo.open("POST", "http://localhost:3000/users");
+        postInfo.setRequestHeader("Content-type", "Application/json");
+        postInfo.send(JSON.stringify(user));
+      }
+
+      function getDataFromServer() {
+        var postInfo = new XMLHttpRequest();
+        postInfo.onreadystatechange = function() {
+          if (postInfo.readyState == 4 && postInfo.status == 200) {
+            displayDataFromServer(JSON.parse(postInfo.response));
+          }
+        };
+
+        postInfo.open("GET", "http://localhost:3000/users");
+        postInfo.send();
+      }
+
+      getDataFromServer();
+
+      function displayDataFromServer(data) {
+        for (i = 0; i < data.length; i++) {
+          var tr = document.createElement("tr");
+          for (a in data[i]) {
+            var td = document.createElement("td");
+            td.innerHTML = data[i][a];
+            tr.appendChild(td);
+          }
+          document.getElementById("myTable").appendChild(tr);
+        }
+      }
+    </script>
+  </body>
+</html>
